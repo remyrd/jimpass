@@ -1,5 +1,5 @@
 """ Setup.py """
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -8,9 +8,10 @@ setup(
     install_requires=[
         "Click",
     ],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'pbr=pybiro:unlock'
+            'pbr=pybiro.cli:cli'
         ]
     },
 )

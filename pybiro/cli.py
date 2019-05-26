@@ -1,6 +1,10 @@
 """ Python Bitwarden Rofi """
-from commands.rofi import run
+from pybiro.commands.rofi import run
 from os import system as sh
+from typing import List
+import pybiro.util
+import subprocess
+import sys
 import click
 
 
@@ -19,8 +23,11 @@ def set_key(session: str, timeout: int):
 
 
 @click.command()
-def unlock():
+@click.option('-a/-n', '--auto-lock/--no-auto-lock')
+@click.option('--lock-timer', type=int)
+def cli(auto_lock, lock_timer):
     """ Unlock the Vault"""
+    print(f"{auto_lock} {lock_timer}")
     timeout = 0
     key = get_key()
     if not key:
