@@ -1,13 +1,16 @@
 """ Util functinos """
 from typing import List
+from subprocess import PIPE, DEVNULL, run, Popen
 import subprocess
 import sys
 
 
-def srun(cmd: List[str]) -> (int, bytes):
+def srun(cmd: str, stdin: str = None) -> (int, bytes):
     """ Wrapper for subprocess_run """
-    if sys.version_info > (3, 6):
-        res = subprocess.run(cmd, stdout=subprocess.PIPE)
+    if stdin:
+        res = Popen(cmd, stdout=PIPE, stderr=DEVNULL, stdin=PIPE, shell=True)
+        output = res.communicate(bytes(stdin, 'utf-8'))[0].decode()
+        return res.returncode, output
     else:
-        res = subprocess.run(cmd, capture_output=True)
-    return res.returncode, res.stdout
+        res = run(cmd, stdout=PIPE, stderr=DEVNULL, encoding="utf-8", shell=True)
+        return res.returncode, res.stdout
