@@ -28,7 +28,7 @@ class KeyManager(object):
             self._key = session_key
         else:
             self._key = stdout
-            return self._key
+        return self._key
 
     @key.setter
     def key(self, session_key: str):
