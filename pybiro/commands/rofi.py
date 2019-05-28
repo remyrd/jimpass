@@ -1,5 +1,4 @@
 """ Calls Rofi on the system """
-import os
 from pybiro.util import srun
 
 

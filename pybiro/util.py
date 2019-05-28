@@ -1,8 +1,5 @@
 """ Util functinos """
-from typing import List
 from subprocess import PIPE, DEVNULL, run, Popen
-import subprocess
-import sys
 
 
 def srun(cmd: str, stdin: str = None) -> (int, bytes):
