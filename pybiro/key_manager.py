@@ -5,19 +5,17 @@ from pybiro.commands import rofi
 
 class KeyManager(object):
     """Manages session key by calling keyctl through subprocess"""
-    def __init__(self, timeout: int, auto_lock: bool):
+    def __init__(self, timeout: int = 0, auto_lock: bool = True):
         self.auto_lock = auto_lock
         self.timeout = timeout if auto_lock else -1
-        self._key = None
 
-    @property
-    def key(self) -> str:
+    def get_key(self) -> str:
         """ Get the key holding the session hash """
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
             code, passwd = rofi.run(
                 dmenu='',
-                p='"Master Password"',
+                p='\"Master Password\"',
                 password='',
                 lines=0
             )
@@ -25,15 +23,15 @@ class KeyManager(object):
                                      "| grep 'export' "
                                      "| sed -E 's/.*export BW_SESSION=\"(.*==)\"$/\\1/'",
                                      stdin=passwd)
-            self._key = session_key
+            self.set_key(session_key)
+            return session_key
         else:
-            self._key = stdout
-        return self._key
+            return srun(f"keyctl pipe {stdout}")[1]
 
-    @key.setter
-    def key(self, session_key: str):
+    def set_key(self, session_key: str):
         """ Set the key holding the session hash """
         if session_key:
+            print(session_key)
             code, key_id = srun("keyctl padd user bw_session @u", stdin=session_key)
             if self.timeout > 0:
                 if srun(f"keyctl timeout \"{key_id}\" {self.timeout}")[0] != 0:
