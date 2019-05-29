@@ -1,6 +1,6 @@
 """ Singleton managing session key"""
 from pybiro.util import srun
-from pybiro.commands import rofi
+from pybiro.displays import rofi
 
 
 class KeyManager(object):
@@ -13,6 +13,7 @@ class KeyManager(object):
         """ Get the key holding the session hash """
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
+            # TODO: refactor into generic display provided at instantiation
             code, passwd = rofi.run(
                 dmenu='',
                 p='\"Master Password\"',

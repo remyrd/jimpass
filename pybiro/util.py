@@ -1,6 +1,11 @@
 """ Util functions """
 from subprocess import PIPE, DEVNULL, run, Popen
+import yaml
 
+def get_file_config(file: str) -> dict:
+    """ Complement context with user configuration """
+    with open(file, 'r') as f:
+        return yaml.parse(f)
 
 def srun(input_cmd: str, stdin: str = None) -> (int, str):
     """ Wrapper for subprocess_run """

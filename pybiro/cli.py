@@ -1,5 +1,5 @@
 """ Python Bitwarden Rofi """
-from pybiro.key_manager import KeyManager
+from pybiro.backends.bitwarden import KeyManager
 import click
 
 

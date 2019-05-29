@@ -7,6 +7,7 @@ setup(
     author="Remy Rojas",
     install_requires=[
         "Click",
+        "Pyaml"
     ],
     setup_requires=[
         "pytest-runner"
