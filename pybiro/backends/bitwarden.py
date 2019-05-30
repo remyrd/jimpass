@@ -1,10 +1,16 @@
 """ Singleton managing session key"""
 from pybiro.util import srun
-from pybiro.displays import rofi
+from pybiro.frontends import rofi
 
 
 class KeyManager(object):
-    """Manages session key by calling keyctl through subprocess"""
+    """
+    Manages session key by calling keyctl through subprocess
+    """
+    """
+    TODO: this is a class specific to the Bitwarden backend. It should be refactored to use 
+    the frontend instantiated by the former
+    """
     def __init__(self, timeout: int = 0, auto_lock: bool = True):
         self.auto_lock = auto_lock
         self.timeout = timeout if auto_lock else -1
@@ -13,7 +19,6 @@ class KeyManager(object):
         """ Get the key holding the session hash """
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
-            # TODO: refactor into generic display provided at instantiation
             code, passwd = rofi.run(
                 dmenu='',
                 p='\"Master Password\"',
