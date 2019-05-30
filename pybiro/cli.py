@@ -1,5 +1,5 @@
 """ Python Bitwarden Rofi """
-from pybiro.backends.bitwarden import KeyManager
+from pybiro.managers.bitwarden import KeyManager
 import click
 
 
@@ -8,4 +8,5 @@ import click
 @click.option('--lock-timer', type=int, default=0)
 def cli(auto_lock, lock_timer):
     """ CLI Entrypoint """
+    # TODO handle config
     key_mgr = KeyManager(lock_timer, auto_lock)

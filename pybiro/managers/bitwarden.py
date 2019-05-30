@@ -1,39 +1,40 @@
 """ Singleton managing session key"""
 from pybiro.util import srun
-from pybiro.frontends.base import Frontend
-from pybiro.backends.base import Backend
-from pybiro.frontends import rofi
+from pybiro.managers.base import Backend
+from pybiro.util import rofi
 
 
 class Bitwarden(Backend):
     def __init__(self, config: dict):
         Backend.__init__(self, config)
-        self.key_mgr = KeyManager(self.frontend, self.timeout, self.auto_lock)
+        self.key_mgr = KeyManager(self.config["timeout"], self.config["auto_lock"])
+        self.session = self.key_mgr.get_key()
+        self._show_items()
+
+    def _show_items(self):
+        pass
 
 
 class KeyManager(object):
     """
     Manages session key by calling keyctl through subprocess
     """
-    """
-    TODO: this is a class specific to the Bitwarden backend. It should be refactored to use 
-    the frontend instantiated by the former
-    """
-    def __init__(self, frontend: Frontend, timeout: int = 0, auto_lock: bool = True):
+    def __init__(self, timeout: int = 0, auto_lock: bool = True):
         self.auto_lock = auto_lock
         self.timeout = timeout if auto_lock else -1
-        self.frontend = frontend
 
     def get_key(self) -> str:
         """ Get the key holding the session hash """
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
-            # TODO map a frontend type_ to what we want to do from each backend. eg. unlock => user_input
-            code, passwd = rofi.run(
-                dmenu='',
-                p='\"Master Password\"',
-                password='',
-                lines=0
+            code, passwd = rofi(
+                prompt='Master Password',
+                options=[
+                    'password'
+                ],
+                args={
+                   'lines': 0
+                }
             )
             code, session_key = srun(f"bw unlock 2> /dev/null "
                                      "| grep 'export' "

@@ -1,5 +1,5 @@
 """ Unit tests live here"""
-from pybiro.backends.bitwarden import KeyManager
+from pybiro.managers.bitwarden import KeyManager
 from pybiro.util import srun
 import json
 
