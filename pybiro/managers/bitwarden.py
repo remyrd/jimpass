@@ -8,8 +8,8 @@ import json
 class Bitwarden(Backend):
     def __init__(self, config: dict):
         Backend.__init__(self, config)
-        self.key_mgr = KeyManager(self.config["timeout"], self.config["auto_lock"])
-        self.session = self.key_mgr.get_key()
+        self.session_mgr = SessionManager(self.config["timeout"], self.config["auto_lock"])
+        self.session = self.session_mgr.get_session()
         self.items = self._get_items()
         # TODO figure out methods to format items in/out for rofi
         self._show_items()
@@ -37,7 +37,7 @@ class Bitwarden(Backend):
                                      stdin=self._items_to_string())
 
 
-class KeyManager(object):
+class SessionManager(object):
     """
     Manages session key by calling keyctl through subprocess
     """
@@ -45,7 +45,7 @@ class KeyManager(object):
         self.auto_lock = auto_lock
         self.timeout = timeout if auto_lock else -1
 
-    def get_key(self) -> str:
+    def get_session(self) -> str:
         """ Get the key holding the session hash """
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
@@ -62,12 +62,12 @@ class KeyManager(object):
                                      "| grep 'export' "
                                      "| sed -E 's/.*export BW_SESSION=\"(.*==)\"$/\\1/'",
                                      stdin=passwd)
-            self.set_key(session_key)
+            self.set_session(session_key)
             return session_key
         else:
             return srun(f"keyctl pipe {stdout}")[1]
 
-    def set_key(self, session_key: str):
+    def set_session(self, session_key: str):
         """ Set the key holding the session hash """
         if session_key:
             print(session_key)
