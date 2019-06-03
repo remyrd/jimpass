@@ -2,6 +2,7 @@
 from pybiro.util import srun
 from pybiro.managers.base import Backend
 from pybiro.util import rofi
+import json
 
 
 class Bitwarden(Backend):
@@ -9,10 +10,31 @@ class Bitwarden(Backend):
         Backend.__init__(self, config)
         self.key_mgr = KeyManager(self.config["timeout"], self.config["auto_lock"])
         self.session = self.key_mgr.get_key()
+        self.items = self._get_items()
+        # TODO figure out methods to format items in/out for rofi
         self._show_items()
 
-    def _show_items(self):
+    def _get_items(self) -> list:
+        """
+        Get the items list
+        :return: list of all items
+        """
+        return json.loads(srun(f"bw list items --session {self.session} 2>/dev/null")[1])
+
+    def _items_to_string(self) -> str:
+        """
+        TODO
+        Uses the display format if configured to render items.
+        :return: line-separated items to display
+        """
         pass
+
+    def _show_items(self):
+        return_code, response = rofi(prompt="Name",
+                                     keybindings=self.config["keybindings"],
+                                     options=['i', 'no-custom'],
+                                     args={'mesg': self.config["message"]},
+                                     stdin=self._items_to_string())
 
 
 class KeyManager(object):

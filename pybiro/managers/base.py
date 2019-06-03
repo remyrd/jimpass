@@ -9,6 +9,6 @@ class Backend(metaclass=ABCMeta):
     """
     def __init__(self, config: dict):
         """
-        :param config:  must include: `frontend`
+        :param config:  must include `managers`
         """
         self.config = config

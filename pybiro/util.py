@@ -41,7 +41,8 @@ def srun(input_cmd: str, stdin: str = None) -> (int, str):
         return res.returncode, res.stdout
 
 
-def rofi(mode: str = "dmenu", prompt: str = None, options: list = None, keybindings: list = None, args: dict = None):
+def rofi(mode: str = "dmenu", prompt: str = None, options: list = None,
+         keybindings: list = None, args: dict = None, stdin: str = None) -> (int, str):
     """
     Run Rofi
     """
@@ -56,4 +57,4 @@ def rofi(mode: str = "dmenu", prompt: str = None, options: list = None, keybindi
         cmd += " ".join([f"-kb-custom-{keybindings.index(kb)+1} {kb}" for kb in keybindings]) + " "
     if args:
         cmd += " ".join([f"-{key} {val}" for key, val in args.items()]) + " "
-    return srun(cmd)
+    return srun(cmd, stdin) if stdin else srun(cmd)
