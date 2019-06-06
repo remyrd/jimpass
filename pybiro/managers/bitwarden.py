@@ -1,8 +1,20 @@
 """ Singleton managing session key"""
 from pybiro.util import srun
 from pybiro.managers.base import Backend
-from pybiro.util import rofi
+from pybiro.util import rofi, Parser
 import json
+
+item_types = {
+    'LOGIN': 1,
+    'NOTE': 2,
+    'CARD': 3,
+    'IDENTITY': 4
+}
+
+login_parser_mapping = {
+    'name': 'name',
+    'username': 'login.username'
+}
 
 
 class Bitwarden(Backend):
@@ -11,7 +23,7 @@ class Bitwarden(Backend):
         self.session_mgr = SessionManager(self.config["timeout"], self.config["auto_lock"])
         self.session = self.session_mgr.get_session()
         self.items = self._get_items()
-        # TODO figure out methods to format items in/out for rofi
+        self.login_parser = Parser(config['bitwarden']['template_str'], login_parser_mapping)
         self._show_items()
 
     def _get_items(self) -> list:
@@ -21,13 +33,26 @@ class Bitwarden(Backend):
         """
         return json.loads(srun(f"bw list items --session {self.session} 2>/dev/null")[1])
 
-    def _items_to_string(self) -> str:
+    @staticmethod
+    def _is_item_type(item: dict, type_: str) -> bool:
         """
-        TODO
-        Uses the display format if configured to render items.
+        checks if item belongs to the desired type
+        :param item: dict representing a database item
+        :param type_: type present in item_types
+        :return: types match
+        """
+        return item['type'] == item_types[type_]
+
+    def _items_to_string(self, type_: str = 'LOGIN') -> str:
+        """
+        Leverage parser to render each database item according to the configured template
         :return: line-separated items to display
         """
-        pass
+        return '/n'.join([
+            self.login_parser.dumps(item)
+            for item in self.items
+            if self._is_item_type(item, type_)
+        ])
 
     def _show_items(self):
         return_code, response = rofi(prompt="Name",
@@ -35,6 +60,8 @@ class Bitwarden(Backend):
                                      options=['i', 'no-custom'],
                                      args={'mesg': self.config["message"]},
                                      stdin=self._items_to_string())
+        print(f"selected object: {response}")
+        print(f"return_code: {return_code}")
 
 
 class SessionManager(object):
