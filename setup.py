@@ -8,7 +8,8 @@ setup(
     install_requires=[
         "Click",
         "Pyaml",
-        "Parse"
+        "Parse",
+        "Deepdiff"
     ],
     setup_requires=[
         "pytest-runner"

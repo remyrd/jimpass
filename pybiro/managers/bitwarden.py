@@ -2,6 +2,7 @@
 from pybiro.util import srun
 from pybiro.managers.base import Backend
 from pybiro.util import rofi, Parser
+from deepdiff import DeepDiff
 import json
 
 item_types = {
@@ -21,9 +22,9 @@ class Bitwarden(Backend):
     def __init__(self, config: dict):
         Backend.__init__(self, config)
         self.session_mgr = SessionManager(self.config["timeout"], self.config["auto_lock"])
+        self.parser = Parser(config['bitwarden']['template_str'], login_parser_mapping)
         self.session = self.session_mgr.get_session()
         self.items = self._get_items()
-        self.login_parser = Parser(config['bitwarden']['template_str'], login_parser_mapping)
         self._show_items()
 
     def _get_items(self) -> list:
@@ -31,7 +32,9 @@ class Bitwarden(Backend):
         Get the items list
         :return: list of all items
         """
-        return json.loads(srun(f"bw list items --session {self.session} 2>/dev/null")[1])
+        item_str = srun(f"bw list items --session {self.session} 2>/dev/null")[1]
+        items = json.loads(item_str, encoding='utf-8')
+        return items
 
     @staticmethod
     def _is_item_type(item: dict, type_: str) -> bool:
@@ -43,16 +46,39 @@ class Bitwarden(Backend):
         """
         return item['type'] == item_types[type_]
 
+    @staticmethod
+    def _is_sub_dict(d1: dict, d2: dict) -> bool:
+        """
+        :param d1: contained in d2
+        :param d2: contains d1
+        :return: if d2 contains all fields in d1
+        """
+        diff = DeepDiff(d1, d2)
+
+        return 'dictionary_item_added' in diff and len(diff) == 1
+
+    def _search(self, stub: dict) -> [dict]:
+        """
+        Fetches an item from the database based on a partial dict
+        :param stub: dict with partial information to match with items in the db
+        :return: a list of matching database items
+        """
+        found_items = [item
+                       for item in self.items
+                       if self._is_sub_dict(stub, item)]
+        return found_items
+
     def _items_to_string(self, type_: str = 'LOGIN') -> str:
         """
         Leverage parser to render each database item according to the configured template
         :return: line-separated items to display
         """
-        return '/n'.join([
-            self.login_parser.dumps(item)
+        line_separated_items = '\n'.join([
+            self.parser.dumps(item)
             for item in self.items
             if self._is_item_type(item, type_)
         ])
+        return line_separated_items
 
     def _show_items(self):
         return_code, response = rofi(prompt="Name",
@@ -60,7 +86,10 @@ class Bitwarden(Backend):
                                      options=['i', 'no-custom'],
                                      args={'mesg': self.config["message"]},
                                      stdin=self._items_to_string())
-        print(f"selected object: {response}")
+        if response:
+            item = self.parser.loads(response)
+            for found_item in self._search(item):
+                print(found_item)
         print(f"return_code: {return_code}")
 
 
