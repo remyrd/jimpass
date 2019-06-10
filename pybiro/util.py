@@ -63,7 +63,8 @@ def rofi(mode: str = "dmenu", prompt: str = None, options: list = None,
 
 class Parser(object):
     """
-    Converts items in the database (dict) from/to the user's template string
+    Converts items in a password manager's database from/to the user's template string
+    based on a model
     """
     def __init__(self, template_str: str, mapping: dict):
         """
@@ -117,4 +118,18 @@ class Parser(object):
         for param_name in params.keys():
             self._mapping_string_to_dict(self.mapping[param_name].split('.'), params[param_name], res)
         return res
+
+    def str_matches_mapping(self, item_str: str) -> bool:
+        """
+        Checks if string matches the password manager's template str
+        :param item_str:
+        :return:
+        """
+        params = parse(self.template_str, item_str).named
+        if not params.keys():
+            return False
+        for key in params.keys():
+            if key not in self.mapping:
+                return False
+        return True
 

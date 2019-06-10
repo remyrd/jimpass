@@ -1,4 +1,5 @@
 """ Python Bitwarden Rofi """
+from pybiro.controller import Controller
 from pybiro.managers.bitwarden import Bitwarden
 from pybiro.util import get_config
 import click
@@ -18,5 +19,4 @@ def cli(auto_lock, lock_timer, config_file):
     """
     config = get_config(config_file)
     config.update(locals())
-    for name in managers.keys():
-        managers[name](config)
+    controller = Controller(config, managers)

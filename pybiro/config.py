@@ -2,11 +2,13 @@ defaults = {
     'managers': ['bitwarden'],
     'timeout': -1,
     'auto_lock': False,
-    'keybindings': [
-        'alt+r'
-    ],
+    'keybindings': {
+        'type_all': 'alt+1',
+        'type_user': 'alt+2',
+        'type_pass': 'alt+3'
+    },
     'message': 'This is a default message!!',
     'bitwarden': {
-        'template_str': "{name}: user {username}"
+        'template_str': '{name}: user {username}'
     }
 }
