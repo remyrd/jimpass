@@ -88,9 +88,12 @@ class Parser(object):
             sub = sub[p]
         return str(sub)
 
-    def dumps(self, item_dict: dict) -> str:
+    def dumps(self, item_dict: dict, template_str: str = None) -> str:
+
         flat_mapping = dict(
             [(k, self._fetch_param_from_dict(item_dict, k)) for k, v in self.mapping.items()])
+        if template_str:
+            return template_str.format(**flat_mapping)
         return self.template_str.format(**flat_mapping)
 
     def _mapping_string_to_dict(self, dict_mapping: list, value: str, sub: dict) -> dict:
@@ -109,8 +112,11 @@ class Parser(object):
             sub[dict_mapping[0]] = value
         return sub
 
-    def loads(self, item_str: str) -> dict:
-        params = parse(self.template_str, item_str).named
+    def loads(self, item_str: str, template_str: str = None) -> dict:
+        if template_str:
+            params = parse(template_str, item_str).named
+        else:
+            params = parse(self.template_str, item_str).named
         for key in params.keys():
             if key not in self.mapping:
                 raise Exception("Unkown variable in template string")

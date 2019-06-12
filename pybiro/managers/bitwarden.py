@@ -13,7 +13,8 @@ item_types = {
 
 login_parser_mapping = {
     'name': 'name',
-    'username': 'login.username'
+    'username': 'login.username',
+    'id': 'id'
 }
 
 
@@ -24,6 +25,7 @@ class Bitwarden(PasswordManager):
         self._parser = Parser(self.pm_config['template_str'], login_parser_mapping)
         self.session = self.session_mgr.get_session()
         self._items = self._fetch_all_items()
+        self._full_template_str = "{name}: {login} ({id})"
 
     def _fetch_all_items(self) -> [dict]:
         """

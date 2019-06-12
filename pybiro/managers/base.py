@@ -19,6 +19,7 @@ class PasswordManager(metaclass=ABCMeta):
         self._items = []
         self._parser = None
         self._name = name
+        self._full_template_str = "{id}"
 
     @abstractmethod
     def _fetch_all_items(self) -> [dict]:
@@ -36,6 +37,10 @@ class PasswordManager(metaclass=ABCMeta):
     def parser(self) -> Parser:
         return self._parser
 
+    @property
+    def full_template_str(self) -> str:
+        return self._full_template_str
+
     @staticmethod
     def _is_sub_dict(d1: dict, d2: dict) -> bool:
         """
@@ -46,13 +51,13 @@ class PasswordManager(metaclass=ABCMeta):
         diff = DeepDiff(d1, d2)
         return 'dictionary_item_added' in diff and len(diff) == 1
 
-    def stringify_items(self) -> str:
+    def stringify_items(self, template_str: str = None) -> str:
         """
         Leverage parser to render each database item according to the configured template
         :return: line-separated items to display
         """
         return '\n'.join([
-            self._parser.dumps(item)
+            self._parser.dumps(item, template_str)
             for item in self._items])
 
     def search(self, stub: dict) -> [dict]:
