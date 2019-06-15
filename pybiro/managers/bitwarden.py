@@ -11,6 +11,7 @@ item_types = {
     'IDENTITY': 4
 }
 
+# How to find fields in the item
 login_parser_mapping = {
     'name': 'name',
     'username': 'login.username',

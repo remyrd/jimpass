@@ -1,13 +1,16 @@
-defaults = {
+DEFAULTS = {
     'managers': ['bitwarden'],
     'timeout': -1,
     'auto_lock': False,
+    'clipboard_timeout': 5,
+    'copy_command': 'xclip',
+    'danger_mode': False,
     'keybindings': {
         'type_all': 'alt+1',
         'type_user': 'alt+2',
         'type_pass': 'alt+3'
     },
-    'message': 'This is a default message!!',
+    'message': 'Default config loaded',
     'bitwarden': {
         'template_str': '{name}: user {username}'
     }

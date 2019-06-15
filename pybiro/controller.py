@@ -1,8 +1,35 @@
+"""
+Controller.
+Interface with both Password Managers and Rofi
+"""
+import time
+from typing import NamedTuple
 from pybiro.managers.base import PasswordManager
 from pybiro.util import rofi, srun
 
+COPY_COMMANDS = {
+    'xclip': {
+        'get': 'xclip -selection clipboard -o',
+        'set': 'xclip -selection clipboard -r',
+        'clear': 'echo -n "" | xclip -selection clipboard -r'
+    },
+    'xsel': {
+        'get': 'xsel --clipboard',
+        'set': 'xsel --clipboard --input',
+        'clear': 'xsel --clipboard --clear'
+    },
+    'wayland': {
+        'get': 'wl-paste',
+        'set': 'wl-copy',
+        'clear': 'wl-copy --clear'
+    }
+}
 
-class Controller(object):
+
+class Controller:
+    """
+    Instantiates password managers and handles user interaction
+    """
     def __init__(self, config: dict, managers: dict):
         self.managers = managers
         self.config = config
@@ -28,22 +55,28 @@ class Controller(object):
         # Default to 0 in case of doubt
         return 0
 
-    def _output_switcher(self, exit_code: int, item_list: [dict], mgr: PasswordManager):
+    def _output_switcher(self,
+                         exit_code: int,
+                         item_list: [dict],
+                         mgr: PasswordManager):
         """
         Choose the method to execute based on its name
+        When not 0, rofi can be configured to return exit codes from 10 - 18
+        corresponding to kb-custom-1 - 9
         :param exit_code: the exit code returned by rofi
-        :param item_list: a list of database items from a single password manager
+        :param item_list: database items from a single password manager
         :param mgr: the Password Manager
         :return:
         """
-        # rofi returns exit codes from 10 - 18 corresponding to kb-custom-1 - kb-custom-9
         if exit_code > 0:
             exit_code -= 9
 
-        kb = self.keybindings[self._get_keybinding(exit_code)]
-        callback = getattr(self, f"_{kb.callback}", lambda: 'Method does not exist!')
+        key_bind = self.keybindings[self._get_keybinding(exit_code)]
+        callback = getattr(self,
+                           f"_{key_bind.callback}",
+                           lambda: 'Method does not exist!')
         return callback(
-            self.deduplicate(item_list, mgr)[1] if item_list else None,
+            self._deduplicate(item_list, mgr)[1] if item_list else None,
             mgr)
 
     def _type_all(self, item, mgr):
@@ -56,17 +89,24 @@ class Controller(object):
         username = mgr.parser.fetch_param_from_dict(item, "username")
         srun(f"xdotool type \"{username}\"")
 
-    @staticmethod
-    def _type_pass(item, mgr):
+    def _type_pass(self, item, mgr):
         password = mgr.parser.fetch_param_from_dict(item, "password")
         srun(f"xdotool type \"{password}\"")
+        if self.config['danger_mode']:
+            srun("xdotool key Return")
 
-    @staticmethod
-    def copy_pass(item, mgr):
-        pass
+    def _copy_pass(self, item, mgr):
+        copy_command = COPY_COMMANDS[self.config['copy_command']]
+        password = mgr.parser.fetch_param_from_dict(item, "password")
+        srun(f"echo -n \"{password}\" | {copy_command['set']}", no_output=True)
+        time.sleep(self.config['clipboard_timeout'])
+        if srun(copy_command['get'])[1] == password:
+            srun(copy_command['clear'], no_output=True)
 
-    def _generate_instructions(self):
-        pass
+    def _generate_instructions(self) -> str:
+        return " | ".join(
+            [f"{kb.callback}: {kb.mapping}" for kb in self.keybindings]
+        )
 
     def show_items(self):
         """
@@ -78,23 +118,22 @@ class Controller(object):
         exit_code, response = rofi(prompt="Name",
                                    keybindings=self.keybindings,
                                    options=['i', 'no-custom'],
-                                   args={'mesg': self.config["message"]},
+                                   args={'mesg': f"{self._generate_instructions()}"},
                                    stdin=rofi_input)
-        print(exit_code)
         # if response and exit_code in self.exit_code_to_output.keys():
         if response:
             result_list = [(mgr, mgr.search(mgr.parser.loads(response)))
                            for name, mgr in self.managers.items()
                            if mgr.parser.str_matches_mapping(response)]
             if len(result_list) != 1:
-                raise Exception("The item matches more than one Password Manager")
+                raise Exception("The item found in more than one Manager")
             found_items = result_list[0][1]
             mgr = result_list[0][0]
             self._output_switcher(exit_code,
                                   found_items,
                                   mgr)
 
-    def deduplicate(self, items: [dict], mgr: PasswordManager) -> (int, dict):
+    def _deduplicate(self, items: [dict], mgr: PasswordManager) -> (int, dict):
         if len(items) == 1:
             return 0, items[0]
         else:
@@ -103,7 +142,7 @@ class Controller(object):
             exit_code, response = rofi(prompt="Deduplicate",
                                        keybindings=self.keybindings,
                                        options=['i', 'no-custom'],
-                                       args={'mesg': self.config["message"]},
+                                       args={'mesg': self._generate_instructions()+"\n Entries duplicated!"},
                                        stdin=rofi_input)
             if response:
                 item = mgr.search(mgr.parser.loads(response))
@@ -111,37 +150,7 @@ class Controller(object):
         return exit_code, None
 
 
-class KeyBinding(object):
-    """
-    Simple struct to represent a keybinding
-    """
-    def __init__(self, exit_code: int, callback: str, mapping: str = 'return'):
-        self._exit_code = exit_code
-        self._mapping = mapping
-        self._callback = callback
-
-    @property
-    def exit_code(self) -> int:
-        return self._exit_code
-
-    @exit_code.setter
-    def exit_code(self, exit_code: int):
-        self._exit_code = exit_code
-
-    @property
-    def mapping(self) -> str:
-        return self._mapping
-
-    @mapping.setter
-    def mapping(self, mapping: str):
-        self._mapping = mapping
-
-    @property
-    def callback(self):
-        return self._callback
-
-    @callback.setter
-    def callback(self, callback: str):
-        self._callback = callback
-
-
+class KeyBinding(NamedTuple):
+    exit_code: int
+    callback: str
+    mapping: str = "Return"
