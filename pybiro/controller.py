@@ -1,74 +1,147 @@
-from pybiro.util import rofi
 from pybiro.managers.base import PasswordManager
+from pybiro.util import rofi, srun
 
 
 class Controller(object):
     def __init__(self, config: dict, managers: dict):
-        self.managers: [PasswordManager] = managers
+        self.managers = managers
         self.config = config
         self.context = 'base'
-        self.exit_code_to_output = {
-            0: 'copy_pass',
-            1: 'type_all',
-            2: 'type_user',
-            3: 'type_pass'
-        }
+        self.keybindings: [KeyBinding] = [
+            KeyBinding(exit_code=0, callback='copy_pass')
+        ]
+        for callback, mapping in config['keybindings'].items():
+            non_overlapping_exit_code = len(self.keybindings)
+            self.keybindings.append(
+                KeyBinding(exit_code=non_overlapping_exit_code,
+                           mapping=mapping,
+                           callback=callback)
+            )
+
         for name in self.managers.keys():
-            self.managers[name](self.config[name])
+            self.managers[name] = self.managers[name](self.config)
 
-    def _output_switcher(self, method_name: str, item_list: [dict], mgr_name: PasswordManager):
-        method = getattr(self, method_name, lambda: 'Method does not exist!')
-        return method(item_list, mgr_name)
+    def _get_keybinding(self, exit_code: int) -> int:
+        for k in self.keybindings:
+            if k.exit_code == exit_code:
+                return self.keybindings.index(k)
+        # Default to 0 in case of doubt
+        return 0
 
-    def _type_all(self, item_list, mgr_name):
-        pass
+    def _output_switcher(self, exit_code: int, item_list: [dict], mgr: PasswordManager):
+        """
+        Choose the method to execute based on its name
+        :param exit_code: the exit code returned by rofi
+        :param item_list: a list of database items from a single password manager
+        :param mgr: the Password Manager
+        :return:
+        """
+        # rofi returns exit codes from 10 - 18 corresponding to kb-custom-1 - kb-custom-9
+        if exit_code > 0:
+            exit_code -= 9
 
-    def _type_user(self, item_list, mgr_name):
-        pass
+        kb = self.keybindings[self._get_keybinding(exit_code)]
+        callback = getattr(self, f"_{kb.callback}", lambda: 'Method does not exist!')
+        return callback(
+            self.deduplicate(item_list, mgr)[1] if item_list else None,
+            mgr)
 
-    def _type_pass(self, item_list, mgr_name):
-        pass
+    def _type_all(self, item, mgr):
+        self._type_user(item, mgr)
+        srun("xdotool key Tab")
+        self._type_pass(item, mgr)
 
-    def copy_pass(self, item_list, mgr_name):
+    @staticmethod
+    def _type_user(item, mgr):
+        username = mgr.parser.fetch_param_from_dict(item, "username")
+        srun(f"xdotool type \"{username}\"")
+
+    @staticmethod
+    def _type_pass(item, mgr):
+        password = mgr.parser.fetch_param_from_dict(item, "password")
+        srun(f"xdotool type \"{password}\"")
+
+    @staticmethod
+    def copy_pass(item, mgr):
         pass
 
     def _generate_instructions(self):
         pass
 
-    def show_items(self, item_template: str = None):
+    def show_items(self):
         """
         Show items using rofi and return its reponse code and the parsed item
         :return:
         """
-        rofi_input = '\n'.join([mgr.stringify_items(item_template)
-                                for mgr in self.managers])
+        rofi_input = '\n'.join([mgr.stringify_items()
+                                for name, mgr in self.managers.items()])
         exit_code, response = rofi(prompt="Name",
-                                   keybindings=self.config["keybindings"],
+                                   keybindings=self.keybindings,
                                    options=['i', 'no-custom'],
                                    args={'mesg': self.config["message"]},
                                    stdin=rofi_input)
+        print(exit_code)
+        # if response and exit_code in self.exit_code_to_output.keys():
         if response:
-            owning_mgr = [(mgr.name, mgr.search(mgr.parser.loads(response, item_template)))
-                          for mgr in self.managers
-                          if mgr.parser.str_matches_mapping(response)]
-            if len(owning_mgr) != 1:
+            result_list = [(mgr, mgr.search(mgr.parser.loads(response)))
+                           for name, mgr in self.managers.items()
+                           if mgr.parser.str_matches_mapping(response)]
+            if len(result_list) != 1:
                 raise Exception("The item matches more than one Password Manager")
-            owning_mgr = owning_mgr[0]
-            found_items = owning_mgr[1]
-            mgr_name = owning_mgr[0]
-            self._output_switcher(self.exit_code_to_output[exit_code],
+            found_items = result_list[0][1]
+            mgr = result_list[0][0]
+            self._output_switcher(exit_code,
                                   found_items,
-                                  mgr_name)
+                                  mgr)
 
-    def deduplicate(self, items: [dict], mgr_name: str) -> (int, dict):
-        mgr: PasswordManager = self.managers[mgr_name]
-        rofi_input = '\n'.join(mgr.stringify_items(mgr.full_template_str))
-        exit_code, response = rofi(prompt="Deduplicate",
-                                   keybindings=self.config["keybindings"],
-                                   options=['i', 'no-custom'],
-                                   args={'mesg': self.config["message"]},
-                                   stdin=rofi_input)
-        if response:
-            item = mgr.search(mgr.parser.loads(response, mgr.full_template_str))
-            return exit_code, item
+    def deduplicate(self, items: [dict], mgr: PasswordManager) -> (int, dict):
+        if len(items) == 1:
+            return 0, items[0]
+        else:
+            mgr.parser.template_str = mgr.full_template_str
+            rofi_input = mgr.stringify_items(items)
+            exit_code, response = rofi(prompt="Deduplicate",
+                                       keybindings=self.keybindings,
+                                       options=['i', 'no-custom'],
+                                       args={'mesg': self.config["message"]},
+                                       stdin=rofi_input)
+            if response:
+                item = mgr.search(mgr.parser.loads(response))
+                return exit_code, item
         return exit_code, None
+
+
+class KeyBinding(object):
+    """
+    Simple struct to represent a keybinding
+    """
+    def __init__(self, exit_code: int, callback: str, mapping: str = 'return'):
+        self._exit_code = exit_code
+        self._mapping = mapping
+        self._callback = callback
+
+    @property
+    def exit_code(self) -> int:
+        return self._exit_code
+
+    @exit_code.setter
+    def exit_code(self, exit_code: int):
+        self._exit_code = exit_code
+
+    @property
+    def mapping(self) -> str:
+        return self._mapping
+
+    @mapping.setter
+    def mapping(self, mapping: str):
+        self._mapping = mapping
+
+    @property
+    def callback(self):
+        return self._callback
+
+    @callback.setter
+    def callback(self, callback: str):
+        self._callback = callback
+
+

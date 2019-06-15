@@ -19,4 +19,4 @@ def cli(auto_lock, lock_timer, config_file):
     """
     config = get_config(config_file)
     config.update(locals())
-    controller = Controller(config, managers)
+    Controller(config, managers).show_items()

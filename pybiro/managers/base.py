@@ -1,7 +1,7 @@
 """ Abstract backend """
 from abc import ABCMeta, abstractmethod
 from deepdiff import DeepDiff
-from pybiro.util import Parser
+from pybiro.parser import Parser
 
 
 class PasswordManager(metaclass=ABCMeta):
@@ -20,6 +20,7 @@ class PasswordManager(metaclass=ABCMeta):
         self._parser = None
         self._name = name
         self._full_template_str = "{id}"
+        self._current_template_str = None
 
     @abstractmethod
     def _fetch_all_items(self) -> [dict]:
@@ -51,14 +52,16 @@ class PasswordManager(metaclass=ABCMeta):
         diff = DeepDiff(d1, d2)
         return 'dictionary_item_added' in diff and len(diff) == 1
 
-    def stringify_items(self, template_str: str = None) -> str:
+    def stringify_items(self, items: [dict] = None) -> str:
         """
         Leverage parser to render each database item according to the configured template
         :return: line-separated items to display
         """
+        if not items:
+            items = self.items
         return '\n'.join([
-            self._parser.dumps(item, template_str)
-            for item in self._items])
+            self._parser.dumps(item)
+            for item in items])
 
     def search(self, stub: dict) -> [dict]:
         """

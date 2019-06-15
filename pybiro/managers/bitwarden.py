@@ -1,7 +1,7 @@
 """ Singleton managing session key"""
-from pybiro.util import srun
+from pybiro.util import srun, rofi
 from pybiro.managers.base import PasswordManager
-from pybiro.util import rofi, Parser
+from pybiro.parser import Parser
 import json
 
 item_types = {
@@ -14,7 +14,8 @@ item_types = {
 login_parser_mapping = {
     'name': 'name',
     'username': 'login.username',
-    'id': 'id'
+    'id': 'id',
+    'password': 'login.password'
 }
 
 
@@ -25,7 +26,7 @@ class Bitwarden(PasswordManager):
         self._parser = Parser(self.pm_config['template_str'], login_parser_mapping)
         self.session = self.session_mgr.get_session()
         self._items = self._fetch_all_items()
-        self._full_template_str = "{name}: {login} ({id})"
+        self._full_template_str = "{name}: {username} ({id})"
 
     def _fetch_all_items(self) -> [dict]:
         """
