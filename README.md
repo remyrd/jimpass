@@ -16,6 +16,7 @@ This project was **heavily** inspired by and builds on top of the ideas in [bitw
   * [Installation](#installation)
   * [Usage](#usage)
   * [Configuration](#configuration)
+  * [License](#license)
 
 ---
 
@@ -123,3 +124,7 @@ lastpass:
   # - last_modified
   # - last_touch
 ```
+
+## License
+
+Released under the GNU General Public License, version 3. See `LICENSE` file.
