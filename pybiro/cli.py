@@ -74,5 +74,4 @@ def cli(config, lock, lock_timer, clipboard_timeout, copy_command, danger_mode):
     # danger-mode
     populate_option(danger_mode, 'danger_mode', config)
     # Run
-    print(config)
     Controller(config, MANAGERS).show_items()

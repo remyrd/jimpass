@@ -75,6 +75,8 @@ class Controller:
         callback = getattr(self,
                            f"_{key_bind.callback}",
                            lambda: 'Method does not exist!')
+        if len(item_list) == 1:
+            return callback(item_list[0], mgr)
         return callback(
             self._deduplicate(item_list, mgr)[1] if item_list else None,
             mgr)
@@ -86,10 +88,12 @@ class Controller:
 
     @staticmethod
     def _type_user(item, mgr):
+        time.sleep(0.2)
         username = mgr.parser.fetch_param_from_dict(item, "username")
         srun(f"xdotool type \"{username}\"")
 
     def _type_pass(self, item, mgr):
+        time.sleep(0.2)
         password = mgr.parser.fetch_param_from_dict(item, "password")
         srun(f"xdotool type \"{password}\"")
         if self.config['danger_mode']:
@@ -134,19 +138,16 @@ class Controller:
                                   mgr)
 
     def _deduplicate(self, items: [dict], mgr: PasswordManager) -> (int, dict):
-        if len(items) == 1:
-            return 0, items[0]
-        else:
-            mgr.parser.template_str = mgr.full_template_str
-            rofi_input = mgr.stringify_items(items)
-            exit_code, response = rofi(prompt="Deduplicate",
-                                       keybindings=self.keybindings,
-                                       options=['i', 'no-custom'],
-                                       args={'mesg': self._generate_instructions()+"\n Entries duplicated!"},
-                                       stdin=rofi_input)
-            if response:
-                item = mgr.search(mgr.parser.loads(response))
-                return exit_code, item
+        mgr.parser.template_str = mgr.full_template_str
+        rofi_input = mgr.stringify_items(items)
+        exit_code, response = rofi(prompt="Deduplicate",
+                                   keybindings=self.keybindings,
+                                   options=['i', 'no-custom'],
+                                   args={'mesg': self._generate_instructions()+"\n Entries duplicated!"},
+                                   stdin=rofi_input)
+        if response:
+            item = mgr.search(mgr.parser.loads(response))
+            return exit_code, item
         return exit_code, None
 
 

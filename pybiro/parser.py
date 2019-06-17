@@ -74,9 +74,10 @@ class Parser(object):
         :param item_str:
         :return:
         """
-        params = parse(self.template_str, item_str).named
-        if not params.keys():
+        parse_result = parse(self.template_str, item_str)
+        if not parse_result:
             return False
+        params = parse_result.named
         for key in params.keys():
             if key not in self.mapping:
                 return False

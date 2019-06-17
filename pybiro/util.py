@@ -11,7 +11,7 @@ def read_config_file(file: str) -> dict:
     TODO: schema verification
     """
     with open(file, 'r') as f:
-        return yaml.load(f)
+        return yaml.safe_load(f)
 
 
 def get_config() -> dict:
