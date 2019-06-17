@@ -1,4 +1,5 @@
 DEFAULTS = {
+    'managers': [],
     'timeout': -1,
     'auto_lock': False,
     'clipboard_timeout': 5,

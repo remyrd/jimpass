@@ -1,7 +1,7 @@
 """ Abstract backend """
 from abc import ABCMeta, abstractmethod
 from deepdiff import DeepDiff
-from pybiro.parser import Parser
+from jimpass.parser import Parser
 
 
 class PasswordManager(metaclass=ABCMeta):

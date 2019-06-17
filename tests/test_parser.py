@@ -1,4 +1,4 @@
-from pybiro.parser import Parser
+from jimpass.parser import Parser
 
 template_str = "account <b>{name}</b> with user {username}"
 mapping = {

@@ -1,7 +1,7 @@
 """ Util functions """
 from subprocess import PIPE, DEVNULL, run, Popen
 from os import environ, path, listdir
-from pybiro.config import DEFAULTS
+from jimpass.config import DEFAULTS
 import yaml
 
 
@@ -20,13 +20,13 @@ def get_config() -> dict:
     """
     if 'XDG_CONFIG_HOME' in environ:
         xdg_h = environ['XDG_CONFIG_HOME']
-        if path.isdir(f"{xdg_h}/pybiro"):
-            for f in listdir(f"{xdg_h}/pybiro"):
+        if path.isdir(f"{xdg_h}/jimpass"):
+            for f in listdir(f"{xdg_h}/jimpass"):
                 if f.startswith("conf") and f.endswith(".yaml" or ".yml"):
-                    return read_config_file("/".join([xdg_h, 'pybiro', f]))
+                    return read_config_file("/".join([xdg_h, 'jimpass', f]))
     if 'HOME' in environ:
         for f in listdir(f"{environ['HOME']}"):
-            if f.startswith(".pybiro") and f.endswith(".yaml" or ".yml"):
+            if f.startswith(".jimpass") and f.endswith(".yaml" or ".yml"):
                 return read_config_file(f"{environ['HOME']}/{f}")
     return DEFAULTS
 

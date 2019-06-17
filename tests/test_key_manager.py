@@ -1,6 +1,6 @@
 """ Unit tests live here"""
-from pybiro.managers.bitwarden import BitwardenSession
-from pybiro.util import srun
+from jimpass.managers.bitwarden import BitwardenSession
+from jimpass.util import srun
 import json
 
 

@@ -1,6 +1,6 @@
-from pybiro.util import srun
-from pybiro.managers.base import PasswordManager
-from pybiro.parser import Parser
+from jimpass.util import srun
+from jimpass.managers.base import PasswordManager
+from jimpass.parser import Parser
 
 parser_mapping = {
     'id': 'id',

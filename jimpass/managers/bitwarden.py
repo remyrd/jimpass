@@ -1,6 +1,6 @@
-from pybiro.util import srun, rofi
-from pybiro.managers.base import PasswordManager
-from pybiro.parser import Parser
+from jimpass.util import srun, rofi
+from jimpass.managers.base import PasswordManager
+from jimpass.parser import Parser
 import json
 
 item_types = {

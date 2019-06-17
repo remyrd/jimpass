@@ -1,11 +1,11 @@
 """ Python Bitwarden Rofi """
 import yaml
 import click
-from pybiro.controller import Controller
-from pybiro.managers.bitwarden import Bitwarden
-from pybiro.managers.lastpass import Lastpass
-from pybiro.util import get_config
-from pybiro.config import DEFAULTS
+from jimpass.controller import Controller
+from jimpass.managers.bitwarden import Bitwarden
+from jimpass.managers.lastpass import Lastpass
+from jimpass.util import get_config
+from jimpass.config import DEFAULTS
 
 MANAGERS = {
     'bitwarden': Bitwarden,
@@ -32,7 +32,7 @@ def populate_option(param_, config_key: str, config):
 
 @click.command()
 @click.option('-c', '--config', type=click.File('r'),
-              help='Path to the config file. Defaults to $HOME/.pybiro.yaml or $XDG_CONFIG_HOME/pybiro/config.yaml')
+              help='Path to the config file. Defaults to $HOME/.jimpass.yaml or $XDG_CONFIG_HOME/jimpass/config.yaml')
 @click.option('--auto-lock', 'lock', flag_value="lock",
               help='Incompatible with --no-auto-lock')
 @click.option('--no-auto-lock', 'lock', flag_value="nolock",

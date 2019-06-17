@@ -1,5 +1,5 @@
 """Test functions in util.py"""
-from pybiro.util import get_config
+from jimpass.util import get_config
 
 
 def test_get_file_config():

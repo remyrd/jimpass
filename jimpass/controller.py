@@ -4,8 +4,8 @@ Interface with both Password Managers and Rofi
 """
 import time
 from typing import NamedTuple
-from pybiro.managers.base import PasswordManager
-from pybiro.util import rofi, srun
+from jimpass.managers.base import PasswordManager
+from jimpass.util import rofi, srun
 
 COPY_COMMANDS = {
     'xclip': {

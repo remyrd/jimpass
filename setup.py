@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="Pybiro",
+    name="Jimpass",
     author="Remy Rojas",
     install_requires=[
         "Click",
@@ -20,7 +20,8 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'pbr=pybiro.cli:cli'
+            'jp=jimpass.cli:cli',
+            'jimpass=jimpass.cli:cli'
         ]
     },
 )
