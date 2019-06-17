@@ -62,7 +62,7 @@ def cli(config, lock, lock_timer, clipboard_timeout, copy_command, danger_mode):
     elif 'auto_lock' not in config:
         config['auto_lock'] = DEFAULTS['auto_lock']
     # lock-timer
-    if config['auto_lock']:
+    if 'auto_lock' in config and config['auto_lock']:
         if lock_timer:
             config['lock_timer'] = lock_timer
         elif 'lock_timer' not in config:
@@ -74,4 +74,6 @@ def cli(config, lock, lock_timer, clipboard_timeout, copy_command, danger_mode):
     # danger-mode
     populate_option(danger_mode, 'danger_mode', config)
     # Run
+    if 'keybindings' not in config:
+        config['keybindings'] = DEFAULTS['keybindings']
     Controller(config, MANAGERS).show_items()
