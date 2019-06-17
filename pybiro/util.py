@@ -11,7 +11,7 @@ def read_config_file(file: str) -> dict:
     TODO: schema verification
     """
     with open(file, 'r') as f:
-        return yaml.parse(f)
+        return yaml.load(f)
 
 
 def get_config() -> dict:
@@ -19,14 +19,15 @@ def get_config() -> dict:
     Provide configuration based on canonical paths or default
     """
     if 'XDG_CONFIG_HOME' in environ:
-        if path.isdir(f"{environ['XDG_CONFIG_HOME']}/pybiro"):
-            for f in listdir(f"{environ['XDG_CONFIG_HOME']}/pybiro"):
-                if f.startswith("config") and f.endswith("yml" or "yaml"):
-                    return read_config_file(f)
+        xdg_h = environ['XDG_CONFIG_HOME']
+        if path.isdir(f"{xdg_h}/pybiro"):
+            for f in listdir(f"{xdg_h}/pybiro"):
+                if f.startswith("conf") and f.endswith(".yaml" or ".yml"):
+                    return read_config_file("/".join([xdg_h, 'pybiro', f]))
     if 'HOME' in environ:
         for f in listdir(f"{environ['HOME']}"):
             if f.startswith(".pybiro") and f.endswith(".yaml" or ".yml"):
-                return read_config_file(f)
+                return read_config_file(f"{environ['HOME']}/{f}")
     return DEFAULTS
 
 

@@ -1,5 +1,4 @@
 DEFAULTS = {
-    'managers': ['bitwarden'],
     'timeout': -1,
     'auto_lock': False,
     'clipboard_timeout': 5,
@@ -10,8 +9,5 @@ DEFAULTS = {
         'type_user': 'alt+2',
         'type_pass': 'alt+3'
     },
-    'message': 'Default config loaded',
-    'bitwarden': {
-        'template_str': '{name}: user {username}'
-    }
+    'message': 'Default config loaded'
 }

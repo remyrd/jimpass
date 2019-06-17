@@ -1,4 +1,3 @@
-""" Singleton managing session key"""
 from pybiro.util import srun, rofi
 from pybiro.managers.base import PasswordManager
 from pybiro.parser import Parser
@@ -53,7 +52,7 @@ class BitwardenSession(object):
         code, stdout = srun("keyctl request user bw_session")
         if code != 0 or not stdout:
             code, passwd = rofi(
-                prompt='Master Password',
+                prompt='Bitwarden Master Password',
                 options=[
                     'password'
                 ],

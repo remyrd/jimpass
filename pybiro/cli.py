@@ -3,11 +3,13 @@ import yaml
 import click
 from pybiro.controller import Controller
 from pybiro.managers.bitwarden import Bitwarden
+from pybiro.managers.lastpass import Lastpass
 from pybiro.util import get_config
 from pybiro.config import DEFAULTS
 
 MANAGERS = {
-    'bitwarden': Bitwarden
+    'bitwarden': Bitwarden,
+    'lastpass': Lastpass
 }
 
 
@@ -72,4 +74,5 @@ def cli(config, lock, lock_timer, clipboard_timeout, copy_command, danger_mode):
     # danger-mode
     populate_option(danger_mode, 'danger_mode', config)
     # Run
+    print(config)
     Controller(config, MANAGERS).show_items()
