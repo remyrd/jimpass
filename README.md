@@ -16,6 +16,7 @@ This project was **heavily** inspired by and builds on top of the ideas in [bitw
   * [Installation](#installation)
   * [Usage](#usage)
   * [Configuration](#configuration)
+  * [Extending](#extending)
   * [License](#license)
 
 ---
@@ -29,13 +30,18 @@ There is no doubt password managers make security online better and easier, yet 
 The people behind [bitwarden-rofi](https://github.com/mattydebie/bitwarden-rofi) nailed it by bridging this UX gap for [*Bitwarden*](https://bitwarden.com/) users. But, what if I don't use Bitwarden, or even worse, what if I need to use **multiple** managers? That's where Jim comes into play.
 
 ## Supported Managers
+
 - [Bitwarden](https://bitwarden.com/)
 - [LastPass](https://www.lastpass.com/)
+
+The architecture allows anyone to extend Jim to use their password manager, provided there's a CLI for it.
+See the [currently implemented ones](jimpass/managers)
 
 ## Roadmap
 
 - [x] **Customizable keybindings** --- For actions such as `copy_username`, `type_password`, etc
 - [x] **Templated item display** --- Choose how *Rofi* displays items. Eg `"Bitwarden: {name} {username}"`
+- [ ] **Better testing and CI**
 - [ ] **Context based management** --- Manage your managers from rofi itself
 - [ ] **Encrypted in-memory storage** -- Duh...
 
@@ -124,6 +130,11 @@ lastpass:
   # - last_modified
   # - last_touch
 ```
+
+## Extending
+
+Instructions on how to integrate your own password manager coming soon... 
+In the meantime you can get inspired by the [current implementations](jimpass/managers)
 
 ## License
 
