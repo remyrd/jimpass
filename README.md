@@ -7,7 +7,7 @@ This project was **heavily** inspired by and builds on top of the ideas in [bitw
     system("/usr/bin/sendmail","jim@business.company", "Jim, get the password typed by 3PM", attachment=logins)
   }
 ```
-
+[![PyPI version](https://badge.fury.io/py/Jimpass.svg)](https://badge.fury.io/py/Jimpass)
 ---
 - [Jimpass (alpha) - The unified password management interface](#jimpass---the-unified-password-management-interface)
   * [Supported Managers](#supported-managers)
@@ -60,7 +60,13 @@ Only install and configure those you use.
 
 ## Installation
 
-For now, you'll have to install locally using pip or setup.py
+Using pip:
+
+```bash
+pip install Jimpass
+```
+
+Locally:
 
 ```bash
 git clone https://github.com/remyrd/jimpass
