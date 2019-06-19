@@ -31,7 +31,7 @@ class Controller:
     Instantiates password managers and handles user interaction
     """
     def __init__(self, config: dict, managers: dict):
-        self.managers = managers
+        self.managers = {}
         self.config = config
         self.context = 'base'
         self.keybindings: [KeyBinding] = [
@@ -44,9 +44,8 @@ class Controller:
                            mapping=mapping,
                            callback=callback)
             )
-
-        for name in self.managers.keys():
-            self.managers[name] = self.managers[name](self.config)
+        for name in self.config['managers']:
+            self.managers[name] = managers[name](self.config)
 
     def _get_keybinding(self, exit_code: int) -> int:
         for k in self.keybindings:
