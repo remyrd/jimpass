@@ -1,9 +1,18 @@
 dist: xenial
 language: python
 python:
-  - "3.6"
-  - "3.7"
+- '3.6'
+- '3.7'
+before_install:
+- sudo apt-get install -y npm keyutils
+- npm install -g @bitwarden/cli
+- export SESSION_KEY="$(bw login ${BITWARDEN_EMAIL} ${BITWARDEN_PASSWORD} --raw)"
+- echo ${SESSION_KEY} | keyctl padd user bw_session @u
 install:
-  - pip install -e .
+- pip install -e .
 script:
-  - python setup.py test
+- python setup.py test
+env:
+  global:
+  - secure: XxDNTAJdnUaj9FdA9cXSSsArUO+ga7LWKbFnYo8p7eRW667EuC3oE01mMa0CGC73ZwgLdLb12sF/eeV5ypC1kuzACAguZen+X/k0cEjSSf2ZOtbnRLQFuHmRKehnna4HGSpMjG428rGASF1iYyr4VqMWngA/Lz17W3rcnlNirTCZJen9QrCrPNrGcHf+uYJhCT4f8qaQbrn0CqzSIG1jhEtgvkdRo5u4CmdScP2B36wMYzxjW6HdppV7Q+cpMeBdsUrocjnPfZIDhLs97WDr4rmPc43r8eMEpHnhNVbIHNsoPtKClv6pGO3jiRUGq6FuVi6u0wEf2QlGrNG9hc1PFt3va7qh7bE++t7AmKjbGjpdFVjqP3KKWYohctaMOZQS+qGZi14GVuv6i0TiB6j7GA3EvzVpn96b7ryUaCcIf3S2vj6G6TNVDg+9WTm0BYT2rj6qikXAcl9g/+2MgotTLj0W1tjJ1AXCaT/NHRb3YKhdh0AGBdFei5PFLRj0UGxCF09xkzODyodFmp0qqXStXegDWmE7CXStQ8cpHUTgFPuUBmZ0OigulwsL1nbqLyBfzb8cfGnhSsMxCdMjpJYI2T8TTRZt+9Z60MC4fZWKQKryXnVgt2sWNSdA6vvi4Qo+Zfp/o32SsCi4fuet2gBE7Nuu6r1ReygChXlnMbzUSV4=
+  - secure: AdGwA4HIZuHsOeAfHMKXPwTJMYbqjuQqP4TSyRGcDvsX3lwbg7A/wYwnnfSi649wARoguJdrAl5shNrdgs34QO56QINRr8rcaGO8+15jjcCcbBW2ZkzchJGmwVm+0+YgOt4t6RGZp6M3AUQgOTw7Rq3EeZaGtf8l3s4pi3IZmNcMnmcYlO9vWkA8XgW0ieI5fKmSgAI8l9lvdZiJUTkJZDjcB9Gci21QC6cYu0S7JsGjJg5U9sm3JCn0Aw9r1TuO8oJplk3zb8qpcpl/VzMrele0/3o3u1KV4CfJM8S7XHShUfPzM2ZXRGi8aIJLYuTueGElhdPLvx2SuujMdGs0BP4apFbI4FXmJvjqFUdUQUDvt8ulQWy3SzeXdQlNIpR1qb6XYFZldqmdrWNTjyeSf9Cyl+CdyOFBXlpM/NQHCYuZ8dIec7rngW4mwJcCg5ADaRj/9dQblsSBVNRt8ZMWAr26po7NKBVk9V6PWkVuHWkgFHngOVm1Y6o14NBbIO6c4tC1yvoNU0TRmcd3U+VKcZF6BDW0PhUw3/Ltw+wOE6AMtbOaMwLW4RVTAZ96ugTAEj4VmISkE5ixmHkLYjlIxF9xPuRPm3l1lWnnHGwGyu0fh0slsz3ddbO+EoiO71qEQ5znGqKeABuGBPdW7WIAY85N59lL9Wy6HhvF85roePY=

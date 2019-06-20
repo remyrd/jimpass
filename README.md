@@ -2,12 +2,14 @@ This project was **heavily** inspired by and builds on top of the ideas in [bitw
 
 # Jimpass (alpha) - The unified password management interface
 
+[![Build Status](https://travis-ci.com/remyrd/jimpass.svg?branch=master)](https://travis-ci.com/remyrd/jimpass) [![PyPI version](https://badge.fury.io/py/Jimpass.svg)](https://badge.fury.io/py/Jimpass)
+
 ```c
   jimpass() {
     system("/usr/bin/sendmail","jim@business.company", "Jim, get the password typed by 3PM", attachment=logins)
   }
 ```
-[![PyPI version](https://badge.fury.io/py/Jimpass.svg)](https://badge.fury.io/py/Jimpass)
+
 ---
 - [Jimpass (alpha) - The unified password management interface](#jimpass---the-unified-password-management-interface)
   * [Supported Managers](#supported-managers)
