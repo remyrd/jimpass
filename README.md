@@ -119,6 +119,7 @@ keybindings:
   type_user: 'alt+2'
   type_pass: 'alt+3'
   copy_totp: 'alt+t'
+  sync: 'alt+r'
 bitwarden:
   template_str: 'bw: {name}: user {username}'
   # available templated params include:
