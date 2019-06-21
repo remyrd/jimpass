@@ -9,7 +9,8 @@ DEFAULTS = {
         'type_all': 'alt+1',
         'type_user': 'alt+2',
         'type_pass': 'alt+3',
-        'copy_totp': 'alt+t'
+        'copy_totp': 'alt+t',
+        'sync': 'alt+r'
     },
     'message': 'Default config loaded'
 }

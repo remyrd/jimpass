@@ -23,7 +23,7 @@ class PasswordManager(metaclass=ABCMeta):
         self._current_template_str = None
 
     @abstractmethod
-    def _fetch_all_items(self) -> [dict]:
+    def fetch_all_items(self) -> [dict]:
         pass
 
     @property

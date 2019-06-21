@@ -28,7 +28,7 @@ class Bitwarden(PasswordManager):
         self._items = self._fetch_all_items()
         self._full_template_str = "{name}: {username} ({id})"
 
-    def _fetch_all_items(self) -> [dict]:
+    def fetch_all_items(self) -> [dict]:
         """
         Get the items list and filter for logins
         :return: list of all items

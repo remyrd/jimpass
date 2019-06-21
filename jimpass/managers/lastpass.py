@@ -33,7 +33,7 @@ class Lastpass(PasswordManager):
         else:
             raise Exception("Couldn't use LastPass, verify it's installed")
 
-    def _fetch_all_items(self) -> [dict]:
+    def fetch_all_items(self) -> [dict]:
         """
         Lastpass supports exporting items into CSV
         :return: flat list of items converted into dict
