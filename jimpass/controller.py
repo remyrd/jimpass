@@ -111,6 +111,12 @@ class Controller:
         if len(totp) > 0:
             srun(f"echo -n '{totp}' | {self.copy_command['set']}", no_output=True)
 
+    def _sync(self, item, mgr):
+        for name, m in self.managers.items():
+            m.items = m.fetch_all_items()
+        self.show_items()
+
+
     def _generate_instructions(self) -> str:
         return " | ".join(
             [f"{kb.callback}: {kb.mapping}" for kb in self.keybindings]
