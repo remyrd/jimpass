@@ -89,12 +89,12 @@ class Controller:
     def _type_user(item, mgr):
         time.sleep(0.2)
         username = mgr.parser.fetch_param_from_dict(item, "username")
-        srun(f"xdotool type \"{username}\"")
+        srun(f"xdotool type '{username}'")
 
     def _type_pass(self, item, mgr):
         time.sleep(0.2)
         password = mgr.parser.fetch_param_from_dict(item, "password")
-        srun(f"xdotool type \"{password}\"")
+        srun(f"xdotool type '{password}'")
         if self.config['danger_mode']:
             srun("xdotool key Return")
 
