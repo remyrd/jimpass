@@ -34,6 +34,10 @@ class PasswordManager(metaclass=ABCMeta):
     def items(self) -> list:
         return self._items
 
+    @items.setter
+    def items(self, items):
+        self._items = items
+
     @property
     def parser(self) -> Parser:
         return self._parser

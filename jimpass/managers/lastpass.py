@@ -21,7 +21,7 @@ class Lastpass(PasswordManager):
         PasswordManager.__init__(self, config, 'lastpass')
         self._parser = Parser(self.pm_config['template_str'], parser_mapping)
         self._do_log_in()
-        self._items = self._fetch_all_items()
+        self._items = self.fetch_all_items()
         self._full_template_str = "{name} ({fullname}): {username}, {url}, {group}, ({id})"
 
     def _do_log_in(self):
