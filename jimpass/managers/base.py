@@ -73,3 +73,10 @@ class PasswordManager(metaclass=ABCMeta):
                 for item in self.items
                 if self._is_sub_dict(stub, item)]
 
+    def get_totp(self, item) -> str:
+        """
+        Get the item's TOTP 2FA. Subclass implements if supported.
+        Default behaviour is empty string
+        """
+        return ""
+
