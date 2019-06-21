@@ -33,10 +33,19 @@ class Bitwarden(PasswordManager):
         Get the items list and filter for logins
         :return: list of all items
         """
-        item_str = srun(f"bw list items --session {self.session} 2>/dev/null")[1]
+        item_str = srun(f"bw list items --session '{self.session}' 2>/dev/null")[1]
         return [item
                 for item in json.loads(item_str, encoding='utf-8')
                 if item['type'] == item_types['LOGIN']]
+
+    def get_totp(self, item) -> str:
+        if 'id' not in item:
+            raise Exception("Can't get TOTP from invalid item")
+        exit_code, result = srun(f"bw --session '{self.session}' get totp \"{item['id']}\"")
+        if exit_code == 0:
+            return result
+        else:
+            return ""
 
 
 class BitwardenSession(object):

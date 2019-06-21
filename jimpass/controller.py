@@ -37,6 +37,7 @@ class Controller:
         self.keybindings: [KeyBinding] = [
             KeyBinding(exit_code=0, callback='copy_pass')
         ]
+        self.copy_command = COPY_COMMANDS[self.config['copy_command']]
         for callback, mapping in config['keybindings'].items():
             non_overlapping_exit_code = len(self.keybindings)
             self.keybindings.append(
@@ -99,12 +100,16 @@ class Controller:
             srun("xdotool key Return")
 
     def _copy_pass(self, item, mgr):
-        copy_command = COPY_COMMANDS[self.config['copy_command']]
         password = mgr.parser.fetch_param_from_dict(item, "password")
-        srun(f"echo -n \"{password}\" | {copy_command['set']}", no_output=True)
+        srun(f"echo -n '{password}' | {self.copy_command['set']}", no_output=True)
         time.sleep(self.config['clipboard_timeout'])
         if srun(copy_command['get'])[1] == password:
             srun(copy_command['clear'], no_output=True)
+
+    def _copy_totp(self, item, mgr):
+        totp = mgr.get_totp(item)
+        if len(totp) > 0:
+            srun(f"echo -n '{totp}' | {self.copy_command['set']}", no_output=True)
 
     def _generate_instructions(self) -> str:
         return " | ".join(
