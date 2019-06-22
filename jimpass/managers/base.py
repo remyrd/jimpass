@@ -23,7 +23,14 @@ class PasswordManager(metaclass=ABCMeta):
         self._current_template_str = None
 
     @abstractmethod
-    def fetch_all_items(self) -> [dict]:
+    def _fetch_all_items(self) -> [dict]:
+        pass
+
+    @abstractmethod
+    def sync(self):
+        """
+        Pull the latest update from the remote database
+        """
         pass
 
     @property
@@ -33,10 +40,6 @@ class PasswordManager(metaclass=ABCMeta):
     @property
     def items(self) -> list:
         return self._items
-
-    @items.setter
-    def items(self, items):
-        self._items = items
 
     @property
     def parser(self) -> Parser:

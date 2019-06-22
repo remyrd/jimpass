@@ -21,7 +21,7 @@ class Lastpass(PasswordManager):
         PasswordManager.__init__(self, config, 'lastpass')
         self._parser = Parser(self.pm_config['template_str'], parser_mapping)
         self._do_log_in()
-        self._items = self.fetch_all_items()
+        self._items = self._fetch_all_items()
         self._full_template_str = "{name} ({fullname}): {username}, {url}, {group}, ({id})"
 
     def _do_log_in(self):
@@ -33,7 +33,7 @@ class Lastpass(PasswordManager):
         else:
             raise Exception("Couldn't use LastPass, verify it's installed")
 
-    def fetch_all_items(self) -> [dict]:
+    def _fetch_all_items(self) -> [dict]:
         """
         Lastpass supports exporting items into CSV
         :return: flat list of items converted into dict
@@ -49,4 +49,10 @@ class Lastpass(PasswordManager):
             for line in lines
         ]
         return items
+
+    def sync(self):
+        exit_code, _ = srun("lpass sync", no_output=True)
+        if exit_code == 0:
+            self._items = self._fetch_all_items()
+        # TODO Warning
 

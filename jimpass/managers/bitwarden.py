@@ -25,10 +25,10 @@ class Bitwarden(PasswordManager):
         self.session_mgr = BitwardenSession(self.config["timeout"], self.config["auto_lock"])
         self._parser = Parser(self.pm_config['template_str'], login_parser_mapping)
         self.session = self.session_mgr.get_session()
-        self._items = self.fetch_all_items()
+        self._items = self._fetch_all_items()
         self._full_template_str = "{name}: {username} ({id})"
 
-    def fetch_all_items(self) -> [dict]:
+    def _fetch_all_items(self) -> [dict]:
         """
         Get the items list and filter for logins
         :return: list of all items
@@ -37,6 +37,12 @@ class Bitwarden(PasswordManager):
         return [item
                 for item in json.loads(item_str, encoding='utf-8')
                 if item['type'] == item_types['LOGIN']]
+
+    def sync(self):
+        exit_code, _ = srun(f"bw sync --session '{self.session}' &> /dev/null", no_output=True)
+        if exit_code == 0:
+            self._items = self._fetch_all_items()
+        # TODO Warning
 
     def get_totp(self, item) -> str:
         if 'id' not in item:

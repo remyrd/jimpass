@@ -103,8 +103,8 @@ class Controller:
         password = mgr.parser.fetch_param_from_dict(item, "password")
         srun(f"echo -n '{password}' | {self.copy_command['set']}", no_output=True)
         time.sleep(self.config['clipboard_timeout'])
-        if srun(copy_command['get'])[1] == password:
-            srun(copy_command['clear'], no_output=True)
+        if srun(self.copy_command['get'])[1] == password:
+            srun(self.copy_command['clear'], no_output=True)
 
     def _copy_totp(self, item, mgr):
         totp = mgr.get_totp(item)
@@ -113,9 +113,8 @@ class Controller:
 
     def _sync(self, item, mgr):
         for name, m in self.managers.items():
-            m.items = m.fetch_all_items()
+            m.sync()
         self.show_items()
-
 
     def _generate_instructions(self) -> str:
         return " | ".join(
