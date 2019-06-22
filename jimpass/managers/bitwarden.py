@@ -75,23 +75,20 @@ class BitwardenSession(object):
                    'lines': 0
                 }
             )
-            code, session_key = srun(f"bw unlock 2> /dev/null "
-                                     "| grep 'export' "
-                                     "| sed -E 's/.*export BW_SESSION=\"(.*==)\"$/\\1/'",
-                                     stdin=passwd)
-            self.set_session(session_key)
-            return session_key
+            code, session_key = srun("bw unlock --raw", stdin=passwd)
+            if code == 0:
+                self.set_session(session_key)
+                return session_key
         else:
             return srun(f"keyctl pipe {stdout}")[1]
 
     def set_session(self, session_key: str):
         """ Set the key holding the session hash """
         if session_key:
-            print(session_key)
             code, key_id = srun("keyctl padd user bw_session @u", stdin=session_key)
             if self.timeout > 0:
-                if srun(f"keyctl timeout \"{key_id}\" {self.timeout}")[0] != 0:
-                    raise Exception(f"Couldn't set timeout for key_id {key_id}")
+                if srun(f"keyctl timeout \"{int(key_id)}\" {self.timeout}")[0] != 0:
+                    raise Exception(f"Couldn't set timeout for key_id {int(key_id)}")
             elif self.timeout == 0:
                 if srun("keyctl purge user bw_session")[0] != 0:
-                    raise Exception(f"Couldn't purge key_id {key_id}")
+                    raise Exception(f"Couldn't purge key_id {int(key_id)}")
