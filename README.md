@@ -32,7 +32,7 @@ The people behind [bitwarden-rofi](https://github.com/mattydebie/bitwarden-rofi)
 
 - __Auto-type__: For those too busy to paste the selected password, fill-in username/passwords automatically. 
 
-  :warning: introducing __Danger mode__: end by tyuping in `<Return>` automatically :warning:
+  :warning: Introducing __Danger mode__: end by typing in `<Return>` automatically :warning:
 
 - __TOTP support__: Copy the TOTP of the selected entry to your clipboard
 - __Sync__: Force the local databases to sync up with the remote backend
