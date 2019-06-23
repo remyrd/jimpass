@@ -27,6 +27,8 @@ deploy:
   distributions: "sdist bdist_wheel"
   skip_existing: "true"
   server: https://test.pypi.org
+  on:
+    all_branches: true
   user: "remyrd"
   password:
     secure: "GN0h0DQMTmnAathxmpzy2QdOv40PVIbyopZxhi6sMG0y+ihSOMseqkdRO5AvEyz5GUYj+7V/O3hqoiCvRZCJOT8MnLztn9jcS5AEIX1SIRGn7PchdTOScssyT3CZdi9pKjfQcrybEinLdZ9LL5nc5lzxVyk9J71jo0+VHHl8cSQG79NB9y67N6T18pmR7Xd7GKQmw+gxxP9xuV/k/v0xUTvYFA7oHdIhnwrXEDIPyyrNcB5JfgUJgWZvQeDFpzOeu8vBBgTk+grmarsqTu9N8HGsTmpl6i7cO7lhY/KUwFKA80az2M57yRoImU2biF2GfAKBd+xhEGKfhEh6ePYXd4w6DCsPzISlyrERoGRuVW/MhRrgzAP/0mDTontpavmC/+ix7ghxVZfwHLTIX/Xvj7ovbjRB/fSCNrDL1oEWunILzqIgdorM6nIPoLPCBubF2V8CByYCzRgCSFiYJpZ9gwi8NLHKFUP1jUo9P2JG/ho9RTQ3Iz8LTXFyo3q2n/yledZKs8lFlzoeYIisaVD2zz8osmTDVvAx//Dzwf9/0d14W6gsQfGEiLlFIwGmEjX6cS5+q3SO2MT1qllE8bEPH1xVu8YOsfev9EFz2qnZlG7gNX0s7frx73TfThJwxZXCxmkT0Eh4GP9bDbSVYwzNdzVkUvyKfHyn7Mjr4Pr1cGQ="
