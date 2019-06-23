@@ -3,15 +3,34 @@ language: python
 python:
 - '3.6'
 - '3.7'
+
 before_install:
 - sudo apt-get install -y npm keyutils
 - npm install -g @bitwarden/cli
 - export SESSION_KEY="$(bw login ${BITWARDEN_EMAIL} ${BITWARDEN_PASSWORD} --raw)"
 - echo ${SESSION_KEY} | keyctl padd user bw_session @u
+
 install:
 - pip install -e .
+
 script:
 - python setup.py test
+
+deploy:
+- provider: pypi
+  distributions: "sdist bdist_wheel"
+  skip_existing: "true"
+  user: "remyrd"
+  password:
+    secure: "URNpHWet8Ve+s3y8DGocrATCU/ZybFD3YZ7EpLudz3aA8PNYhIeNzeNZcRXT1aVq8syp9JkPQHsmPQmKuOpK1LuvpdZ9ksODlSc1ERNBooEW1fY3ByhonxN9ZAqafJFJQNJAJpXvcMbXm4Ssu+SGRJs9BRV3iiIeMq3hK0YAmwPviNaFTb4BihV/AHMqdRYKI9t1ZW2eSx9/oj31QhtARIJirB6v7bgf2zER6kAn7hmgf4eQtnq+WJeVSPI1RkpI0VO586DmA57EL0aRD/k7bqFEj4qD7/6lC+fIMIB/J/l1hpsthWdPg/XrPl4uV9U0gRPFxOJQzf91ELYyIOts7B9Azj6SqRTkR4qrW+OOuwHrZYfpoAgVClNj16dtdm+OyPV3Ocnn0nDd8xcRoJbMsDvWP40j8UJDz3WtzF1ZethUUBz2Bn6CMp1SxB7ULWUff7ROD85BHknn/fvdzMMAFS/krM1LFLtjD6oUvOLa4xJwmy2DgAvLbmyfKuytXoIgRwS7o4/Yz8ASdfyEBkp1e0Wcxw1aWYkn70/baenaemMjcCmSWgCNiFkXCAR6JdhZ0kBRz3kHAw2nmgysTBEONXFqgWKa6MB/gJ7mn6sV1xMD6kUcLlRy/qlgZQFNuFi1cAypOcduOfljaCka12mJzqiPlnpAAE/VTRwUn0CTLF4="
+- provider: pypi
+  distributions: "sdist bdist_wheel"
+  skip_existing: "true"
+  server: https://test.pypi.org
+  user: "remyrd"
+  password:
+    secure: "GN0h0DQMTmnAathxmpzy2QdOv40PVIbyopZxhi6sMG0y+ihSOMseqkdRO5AvEyz5GUYj+7V/O3hqoiCvRZCJOT8MnLztn9jcS5AEIX1SIRGn7PchdTOScssyT3CZdi9pKjfQcrybEinLdZ9LL5nc5lzxVyk9J71jo0+VHHl8cSQG79NB9y67N6T18pmR7Xd7GKQmw+gxxP9xuV/k/v0xUTvYFA7oHdIhnwrXEDIPyyrNcB5JfgUJgWZvQeDFpzOeu8vBBgTk+grmarsqTu9N8HGsTmpl6i7cO7lhY/KUwFKA80az2M57yRoImU2biF2GfAKBd+xhEGKfhEh6ePYXd4w6DCsPzISlyrERoGRuVW/MhRrgzAP/0mDTontpavmC/+ix7ghxVZfwHLTIX/Xvj7ovbjRB/fSCNrDL1oEWunILzqIgdorM6nIPoLPCBubF2V8CByYCzRgCSFiYJpZ9gwi8NLHKFUP1jUo9P2JG/ho9RTQ3Iz8LTXFyo3q2n/yledZKs8lFlzoeYIisaVD2zz8osmTDVvAx//Dzwf9/0d14W6gsQfGEiLlFIwGmEjX6cS5+q3SO2MT1qllE8bEPH1xVu8YOsfev9EFz2qnZlG7gNX0s7frx73TfThJwxZXCxmkT0Eh4GP9bDbSVYwzNdzVkUvyKfHyn7Mjr4Pr1cGQ="
+
 env:
   global:
   - secure: XxDNTAJdnUaj9FdA9cXSSsArUO+ga7LWKbFnYo8p7eRW667EuC3oE01mMa0CGC73ZwgLdLb12sF/eeV5ypC1kuzACAguZen+X/k0cEjSSf2ZOtbnRLQFuHmRKehnna4HGSpMjG428rGASF1iYyr4VqMWngA/Lz17W3rcnlNirTCZJen9QrCrPNrGcHf+uYJhCT4f8qaQbrn0CqzSIG1jhEtgvkdRo5u4CmdScP2B36wMYzxjW6HdppV7Q+cpMeBdsUrocjnPfZIDhLs97WDr4rmPc43r8eMEpHnhNVbIHNsoPtKClv6pGO3jiRUGq6FuVi6u0wEf2QlGrNG9hc1PFt3va7qh7bE++t7AmKjbGjpdFVjqP3KKWYohctaMOZQS+qGZi14GVuv6i0TiB6j7GA3EvzVpn96b7ryUaCcIf3S2vj6G6TNVDg+9WTm0BYT2rj6qikXAcl9g/+2MgotTLj0W1tjJ1AXCaT/NHRb3YKhdh0AGBdFei5PFLRj0UGxCF09xkzODyodFmp0qqXStXegDWmE7CXStQ8cpHUTgFPuUBmZ0OigulwsL1nbqLyBfzb8cfGnhSsMxCdMjpJYI2T8TTRZt+9Z60MC4fZWKQKryXnVgt2sWNSdA6vvi4Qo+Zfp/o32SsCi4fuet2gBE7Nuu6r1ReygChXlnMbzUSV4=
