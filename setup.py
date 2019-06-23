@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="Jimpass",
-    version="0.0.1-alpha",
+    version="0.0.1-alpha1",
     author="Remy Rojas",
     author_email="remy.rojas@pm.me",
     description="A universal password manager interface, powered by Rofi",
