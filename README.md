@@ -6,6 +6,9 @@ This project was **heavily** inspired by and builds on top of the ideas in [bitw
 
 [Jimsort](https://cmpwn.com/@sir/102220283470088263), but for passwords.
 
+
+![demo](img/demo.gif)
+
 ---
 - [Jimpass (alpha) - The unified password management interface](#jimpass---the-unified-password-management-interface)
   * [Features](#features)
