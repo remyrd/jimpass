@@ -45,7 +45,7 @@ class Lastpass(PasswordManager):
         keys = items_csv.split('\n')[0]
         lines = items_csv.split('\n')[1:]
         items = [
-            {k: v for k, v in zip(keys.split(','), line.split(','))}
+            {k: self.parser.flat_map_item(v) for k, v in zip(keys.split(','), line.split(','))}
             for line in lines
         ]
         return items
