@@ -34,7 +34,7 @@ class Bitwarden(PasswordManager):
         :return: list of all items
         """
         item_str = srun(f"bw list items --session '{self.session}' 2>/dev/null")[1]
-        return [item
+        return [self.parser.flat_map_item(item)
                 for item in json.loads(item_str, encoding='utf-8')
                 if item['type'] == item_types['LOGIN']]
 

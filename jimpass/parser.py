@@ -36,28 +36,19 @@ class Parser(object):
             sub = sub[p]
         return str(sub) if sub else "?"
 
-    def dumps(self, item_dict: dict) -> str:
+    def dumps(self, item: dict) -> str:
+        return self.template_str.format(**item)
 
-        flat_mapping = dict(
-            [(k, self.fetch_param_from_dict(item_dict, k))
-             for k, v in self.mapping.items()])
-        return self.template_str.format(**flat_mapping)
-
-    def _mapping_string_to_dict(self, dict_mapping: list, value: str, sub: dict) -> dict:
+    def flat_map_item(self, original_item: dict) -> dict:
         """
-        DF recursive update a dictionnary at the specified position
-        :param dict_mapping: dot-separated mapping where to write the value
-        :param value: value to write
-        :param sub: sub-tree of the dictionnary specified by `dict_mapping
-        :return:
+        Make a flat map out of an item
+        :param original_item: fetched from the database
+        :return: its flat map according to `login_parser_mapping`
         """
-        if len(dict_mapping) > 1:
-            if dict_mapping[0] not in sub:
-                sub[dict_mapping[0]] = {}
-            sub[dict_mapping[0]] = self._mapping_string_to_dict(dict_mapping[1:], value, sub[dict_mapping[0]])
-        else:
-            sub[dict_mapping[0]] = value
-        return sub
+        new_item = {}
+        for k in self.mapping.keys():
+            new_item[k] = self.fetch_param_from_dict(original_item, k)
+        return new_item
 
     def loads(self, item_str: str) -> dict:
         params = parse(self.template_str, item_str).named
@@ -67,7 +58,7 @@ class Parser(object):
         res = {}
         for param_name, val in params.items():
             if val not in '?':
-                self._mapping_string_to_dict(self.mapping[param_name].split('.'), params[param_name], res)
+                res[param_name] = val
         return res
 
     def str_matches_mapping(self, item_str: str) -> bool:

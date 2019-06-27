@@ -89,18 +89,18 @@ class Controller:
     @staticmethod
     def _type_user(item, mgr):
         time.sleep(0.2)
-        username = mgr.parser.fetch_param_from_dict(item, "username")
+        username = item["username"]
         srun(f"xdotool type '{username}'")
 
     def _type_pass(self, item, mgr):
         time.sleep(0.2)
-        password = mgr.parser.fetch_param_from_dict(item, "password")
+        password = item["password"]
         srun(f"xdotool type '{password}'")
         if self.config['danger_mode']:
             srun("xdotool key Return")
 
     def _copy_pass(self, item, mgr):
-        password = mgr.parser.fetch_param_from_dict(item, "password")
+        password = item["password"]
         srun(f"echo -n '{password}' | {self.copy_command['set']}", no_output=True)
         time.sleep(self.config['clipboard_timeout'])
         if srun(self.copy_command['get'])[1] == password:
