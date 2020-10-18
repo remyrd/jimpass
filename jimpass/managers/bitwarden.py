@@ -22,7 +22,11 @@ login_parser_mapping = {
 class Bitwarden(PasswordManager):
     def __init__(self, config: dict):
         PasswordManager.__init__(self, config, 'bitwarden')
-        self.session_mgr = BitwardenSession(self.config["timeout"], self.config["auto_lock"])
+        lock_timer = self.config.get("lock_timer")
+        if lock_timer:
+            self.session_mgr = BitwardenSession(lock_timer, self.config["auto_lock"])
+        else:
+            self.session_mgr = BitwardenSession(auto_lock=sefl.config["auto_lock"])
         self._parser = Parser(self.pm_config['template_str'], login_parser_mapping)
         self.session = self.session_mgr.get_session()
         self._items = self._fetch_all_items()

@@ -1,6 +1,6 @@
 DEFAULTS = {
     'managers': [],
-    'timeout': -1,
+    'lock_timer': -1,
     'auto_lock': False,
     'clipboard_timeout': 5,
     'copy_command': 'xclip',
